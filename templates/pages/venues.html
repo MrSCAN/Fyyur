@@ -3,17 +3,53 @@
 {% block content %}
 {% for area in areas %}
 <h3>{{ area.city }}, {{ area.state }}</h3>
-	<ul class="items">
-		{% for venue in area.venues %}
-		<li>
-			<a href="/venues/{{ venue.id }}">
-				<i class="fas fa-music"></i>
-				<div class="item">
-					<h5>{{ venue.name }}</h5>
-				</div>
-			</a>
-		</li>
-		{% endfor %}
-	</ul>
+<ul class="items">
+	{% for venue in area.venues %}
+	<li>
+		<a href="/venues/{{ venue.id }}" style="display: inline-block">
+			<i class="fas fa-music"></i>
+			<div class="item" style="display: inline-block">
+				<h5>{{ venue.name }}</h5>
+			</div>
+		</a>
+		<button class="btn btn-danger delete-button" data-id="{{ venue.id }}"
+			style="display: inline-block; margin-left: 2%;">Delete
+			Venue</button>
+
+	</li>
+	{% endfor %}
+</ul>
 {% endfor %}
+
+
+<script>
+	const deleteBtns = document.querySelectorAll('.delete-button');
+	for (let i = 0; i < deleteBtns.length; i++) {
+		const deleteBtn = deleteBtns[i];
+
+		deleteBtn.onclick = async function (e) {
+			const btnId = e.target.dataset.id;
+			await fetch('/venues/' + btnId, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then(function (jsonResponse) {
+					return jsonResponse.json()
+				}).then(function (response) {
+					if (response['success'] == true) {
+						alert('Venue deleted successfuly!')
+						window.location.href = '/'
+					}
+				})
+				.catch(function () {
+					alert('An error occured while deleting venue')
+				})
+		}
+	}
+
+</script>
+
+
 {% endblock %}
